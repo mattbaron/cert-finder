@@ -1,2 +1,2 @@
-# certfinder
+# cert-finder
 Certificate finder

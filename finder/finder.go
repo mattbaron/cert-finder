@@ -48,7 +48,7 @@ func (finder *Finder) FindDir(Directory string, Depth int) {
 		if file.IsDir() {
 			finder.FindDir(Directory+"/"+file.Name(), Depth+1)
 		} else if finder.Match(file.Name()) {
-			finder.AddFile(file.Name())
+			finder.AddFile(Directory + "/" + file.Name())
 		}
 	}
 }

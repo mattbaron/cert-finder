@@ -33,7 +33,7 @@ func (finder *Finder) Match(File string) bool {
 	return false
 }
 
-func (finder *Finder) FindDir(Directory string, Depth int) {
+func (finder *Finder) DiscoverDirectory(Directory string, Depth int) {
 	if Depth > finder.MaxDepth {
 		return
 	}
@@ -46,7 +46,7 @@ func (finder *Finder) FindDir(Directory string, Depth int) {
 
 	for _, file := range files {
 		if file.IsDir() {
-			finder.FindDir(Directory+"/"+file.Name(), Depth+1)
+			finder.DiscoverDirectory(Directory+"/"+file.Name(), Depth+1)
 		} else if finder.Match(file.Name()) {
 			finder.AddFile(Directory + "/" + file.Name())
 		}
@@ -54,6 +54,6 @@ func (finder *Finder) FindDir(Directory string, Depth int) {
 }
 
 func (finder *Finder) FindFiles(Root string) []string {
-	finder.FindDir(Root, 0)
+	finder.DiscoverDirectory(Root, 0)
 	return finder.Files
 }

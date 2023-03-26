@@ -21,9 +21,9 @@ func DoPem(File string, Data []byte) {
 func DoPkcs12(File string, Data []byte) {
 	_, cert, _ := pkcs12.Decode(Data, "")
 	if cert != nil {
-		fmt.Printf("OK Pem: %s %s\n", File, cert.NotAfter)
+		fmt.Printf("OK Pkcs12: %s %s\n", File, cert.NotAfter)
 	} else {
-		fmt.Printf("ERR Pem: %s\n", File)
+		fmt.Printf("ERR Pkcs12: %s\n", File)
 	}
 }
 

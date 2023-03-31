@@ -3,9 +3,7 @@ package main
 import (
 	"encoding/pem"
 	"fmt"
-	"os"
 
-	"github.com/mattbaron/cert-finder/finder"
 	"golang.org/x/crypto/pkcs12"
 )
 
@@ -28,10 +26,8 @@ func DoPkcs12(File string, Data []byte) {
 }
 
 func main() {
-	finder := finder.NewFinder(".crt", ".cer", ".pem", ".der", ".jks", ".pfx", ".p12", ".cert")
-	for _, file := range finder.FindFiles("/Users/mbaron") {
-		dat, _ := os.ReadFile(file)
-		DoPem(file, dat)
-		DoPkcs12(file, dat)
-	}
+	// finder := finder.NewFinder(".crt", ".cer", ".pem", ".der", ".jks", ".pfx", ".p12", ".cert")
+	// for _, file := range finder.FindFiles("/Users/mbaron/tmp/certs") {
+	// 	cert.Decode()
+	// }
 }

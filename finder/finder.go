@@ -7,6 +7,8 @@ import (
 	"github.com/mattbaron/cert-finder/cert"
 )
 
+const PathSeparator = string(os.PathSeparator)
+
 type Finder struct {
 	Root     string
 	Patterns []string
@@ -48,9 +50,9 @@ func (finder *Finder) DiscoverDirectory(Directory string, Depth int) {
 
 	for _, file := range files {
 		if file.IsDir() {
-			finder.DiscoverDirectory(Directory+"/"+file.Name(), Depth+1)
+			finder.DiscoverDirectory(Directory+PathSeparator+file.Name(), Depth+1)
 		} else if finder.Match(file.Name()) {
-			finder.AddFile(cert.NewFile(Directory + "/" + file.Name()))
+			finder.AddFile(cert.NewFile(Directory + PathSeparator + file.Name()))
 		}
 	}
 }

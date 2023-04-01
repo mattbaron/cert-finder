@@ -3,6 +3,7 @@ package cert
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -25,10 +26,11 @@ func NewFile(Path string) *File {
 		Ext:   filepath.Ext(Path),
 	}
 
-	if strings.Contains(file.Ext, "p12") {
+	if strings.Contains(file.Ext, "p12") || strings.Contains(file.Ext, "pfx") {
+		fmt.Println("Loading pfx")
 		file.LoadP12()
 	} else {
-		file.LoadPem()
+		file.LoadPEM()
 	}
 
 	fmt.Printf("FILE: %s, CERTS: %d\n", file.Path, len(file.Certs))
@@ -46,18 +48,17 @@ func (f *File) LoadP12() error {
 		return err
 	}
 
-	_, cert, err := pkcs12.Decode(bytes, "")
+	pemBlocks, err := pkcs12.ToPEM(bytes, "")
 	if err == nil {
-		f.AddCert(cert)
-	} else {
-		fmt.Println(err)
+		for _, block := range pemBlocks {
+			f.ProcessPEMBlock(block)
+		}
 	}
 
 	return nil
 }
 
-func (f *File) LoadPem() error {
-
+func (f *File) LoadPEM() error {
 	bytes, err := os.ReadFile(f.Path)
 	if err != nil {
 		return err
@@ -71,15 +72,28 @@ func (f *File) LoadPem() error {
 			continue
 		}
 
-		if block.Type == "CERTIFICATE" {
-			cert, err := x509.ParseCertificate(block.Bytes)
-			if err == nil {
-				f.Certs = append(f.Certs, cert)
-			}
-		}
+		f.ProcessPEMBlock(block)
 
 		bytes = rest
 		more = (len(rest) > 0)
+	}
+
+	return nil
+}
+
+func (f *File) ProcessPEMBlock(block *pem.Block) error {
+
+	if block == nil {
+		return errors.New("nil PEM block")
+	}
+
+	if block.Type != "CERTIFICATE" {
+		return errors.New("not a certificate")
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err == nil {
+		f.Certs = append(f.Certs, cert)
 	}
 
 	return nil

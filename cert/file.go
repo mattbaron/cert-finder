@@ -22,7 +22,7 @@ func NewFile(Path string) *File {
 	file := &File{
 		Path:  Path,
 		Certs: make([]*x509.Certificate, 0),
-		Ext:   filepath.Ext(Path),
+		Ext:   strings.ToLower(filepath.Ext(Path)),
 	}
 
 	if strings.Contains(file.Ext, "p12") || strings.Contains(file.Ext, "pfx") {

@@ -27,6 +27,8 @@ func NewFile(Path string) *File {
 
 	if strings.Contains(file.Ext, "p12") || strings.Contains(file.Ext, "pfx") {
 		file.LoadPKCS12()
+	} else if strings.Contains(file.Ext, "der") || strings.Contains(file.Ext, "cer") {
+		file.LoadBinary()
 	} else {
 		file.LoadPEM()
 	}
@@ -58,23 +60,33 @@ func (f *File) LoadPKCS12() error {
 	return nil
 }
 
+func (f *File) LoadBinary() error {
+	bytes, err := os.ReadFile(f.Path)
+	if err != nil {
+		return err
+	}
+
+	cert, err := x509.ParseCertificate(bytes)
+	if err == nil {
+		f.AddCert(cert)
+	}
+
+	return err
+}
+
 func (f *File) LoadPEM() error {
 	bytes, err := os.ReadFile(f.Path)
 	if err != nil {
 		return err
 	}
 
-	for more := true; more; {
-		block, rest := pem.Decode(bytes)
-
-		if block != nil {
-			f.ProcessPEMBlock(block)
-			bytes = rest
-			more = (len(rest) > 0)
-		} else {
-			more = false
+	for {
+		var block *pem.Block
+		block, bytes = pem.Decode(bytes)
+		if block == nil {
+			break
 		}
-
+		f.ProcessPEMBlock(block)
 	}
 
 	return nil

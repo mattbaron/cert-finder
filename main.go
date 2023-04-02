@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	finder := finder.NewFinder(".crt", ".cer", ".pem", ".der", ".jks", ".pfx", ".p12", ".cert")
+	finder := finder.NewFinder(".crt", ".cer", ".pem", ".der", ".pfx", ".p12", ".cert")
+	//finder := finder.NewFinder(".der")
 	finder.FindFiles("/Users/mbaron/nas/certs")
 
 	for _, file := range finder.Files {
